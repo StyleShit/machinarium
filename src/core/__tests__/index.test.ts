@@ -178,6 +178,26 @@ describe('Machinarium', () => {
 		expect(bulbMachine.getState()).toBe('off');
 	});
 
+	it('should support checking if a transition can be performed', () => {
+		// Arrange.
+		type State = 'on' | 'off';
+		type Event = 'turn-on' | 'turn-off';
+
+		const bulbMachine = createMachine<State, Event>({
+			initialState: 'off',
+		})
+			.when('off', (b) => {
+				b.on('turn-on').transitionTo('on');
+			})
+			.when('on', (b) => {
+				b.on('turn-off').transitionTo('off');
+			});
+
+		// Act & Assert.
+		expect(bulbMachine.can('turn-on')).toBe(true);
+		expect(bulbMachine.can('turn-off')).toBe(false);
+	});
+
 	it('should subscribe to state transitions', () => {
 		// Arrange.
 		type State = 'on' | 'off';
@@ -243,6 +263,10 @@ describe('Machinarium', () => {
 
 		expectTypeOf(bulbMachine.getState).toEqualTypeOf<() => State>();
 		expectTypeOf(bulbMachine.send).toEqualTypeOf<(event: Event) => void>();
+
+		expectTypeOf(bulbMachine.can).toEqualTypeOf<
+			(event: Event) => boolean
+		>();
 
 		expectTypeOf(bulbMachine.subscribe).toEqualTypeOf<
 			(subscriber: () => void) => () => void

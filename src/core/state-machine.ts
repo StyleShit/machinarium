@@ -45,13 +45,7 @@ export class StateMachine<TState extends string, TEvent extends string> {
 	}
 
 	send(event: TEvent) {
-		const possibleTransitions = this.transitions[this.state];
-
-		const nextDestination = possibleTransitions
-			?.map((transition) =>
-				transition[getDestinationByEvent](event)?.[getDestination](),
-			)
-			.find((destination) => !!destination);
+		const nextDestination = this.getNextDestination(event);
 
 		if (!nextDestination) {
 			return;
@@ -60,6 +54,24 @@ export class StateMachine<TState extends string, TEvent extends string> {
 		this.state = nextDestination(this.state);
 
 		this.notify();
+	}
+
+	can(event: TEvent) {
+		const nextDestination = this.getNextDestination(event);
+
+		return !!nextDestination;
+	}
+
+	getNextDestination(event: TEvent) {
+		const possibleTransitions = this.transitions[this.state];
+
+		const nextDestination = possibleTransitions
+			?.map((transition) =>
+				transition[getDestinationByEvent](event)?.[getDestination](),
+			)
+			.find((destination) => !!destination);
+
+		return nextDestination ?? null;
 	}
 
 	subscribe(subscriber: () => void) {
