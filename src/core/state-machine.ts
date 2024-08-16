@@ -4,7 +4,7 @@ export class StateMachine<TState extends string, TEvent extends string> {
 	private state: TState;
 
 	private transitions: {
-		[state in TState]?: TransitionsBuilder<TState, TEvent>;
+		[state in TState]?: Array<TransitionsBuilder<TState, TEvent>>;
 	} = {};
 
 	private subscribers: Set<() => void> = new Set();
@@ -21,7 +21,11 @@ export class StateMachine<TState extends string, TEvent extends string> {
 
 		builderCallback(transitionBuilder);
 
-		this.transitions[state] = transitionBuilder;
+		if (!this.transitions[state]) {
+			this.transitions[state] = [];
+		}
+
+		this.transitions[state].push(transitionBuilder);
 
 		return this;
 	}
@@ -32,7 +36,10 @@ export class StateMachine<TState extends string, TEvent extends string> {
 
 	send(event: TEvent) {
 		const currentTransition = this.transitions[this.state];
-		const destination = currentTransition?.get(event)?.getDestination();
+
+		const destination = currentTransition
+			?.map((t) => t.get(event)?.getDestination())
+			.find((t) => !!t);
 
 		if (!destination) {
 			return;

@@ -85,6 +85,38 @@ describe('Machinarium', () => {
 		expect(bulbMachine.getState()).toBe('off');
 	});
 
+	it('should support multiple destination definition for the same state', () => {
+		// Arrange.
+		type State = 'on' | 'off' | 'broken';
+		type Event = 'turn-on' | 'turn-off' | 'break';
+
+		const bulbMachine = createMachine<State, Event>({
+			initialState: 'off',
+		})
+			.when('off', (b) => {
+				b.on('turn-on').transitionTo('on');
+			})
+			.when('on', (b) => {
+				b.on('turn-off').transitionTo('off');
+			})
+			.when('off', (b) => {
+				b.on('break').transitionTo('broken');
+			});
+
+		// Act.
+		bulbMachine.send('turn-on');
+
+		// Assert.
+		expect(bulbMachine.getState()).toBe('on');
+
+		// Act.
+		bulbMachine.send('turn-off');
+		bulbMachine.send('break');
+
+		// Assert.
+		expect(bulbMachine.getState()).toBe('broken');
+	});
+
 	it('should subscribe to state transitions', () => {
 		// Arrange.
 		type State = 'on' | 'off';
