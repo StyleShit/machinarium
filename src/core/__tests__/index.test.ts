@@ -117,6 +117,41 @@ describe('Machinarium', () => {
 		expect(bulbMachine.getState()).toBe('broken');
 	});
 
+	it('should support defining multiple states transitions at once', () => {
+		// Arrange.
+		type State = 'on' | 'off' | 'broken';
+		type Event = 'turn-on' | 'turn-off' | 'break';
+
+		const bulbMachine = createMachine<State, Event>({
+			initialState: 'off',
+		})
+			.when(['on', 'off'], (b) => {
+				b.on('break').transitionTo('broken');
+			})
+			.when('broken', (b) => {
+				b.on('turn-on').transitionTo('on');
+				b.on('turn-off').transitionTo('off');
+			});
+
+		// Act.
+		bulbMachine.send('break');
+
+		// Assert.
+		expect(bulbMachine.getState()).toBe('broken');
+
+		// Act.
+		bulbMachine.send('turn-on');
+
+		// Assert.
+		expect(bulbMachine.getState()).toBe('on');
+
+		// Act.
+		bulbMachine.send('break');
+
+		// Assert.
+		expect(bulbMachine.getState()).toBe('broken');
+	});
+
 	it('should subscribe to state transitions', () => {
 		// Arrange.
 		type State = 'on' | 'off';
@@ -166,9 +201,9 @@ describe('Machinarium', () => {
 		});
 
 		// Assert.
-		expectTypeOf<
-			Parameters<typeof bulbMachine.when>[0]
-		>().toEqualTypeOf<State>();
+		expectTypeOf<Parameters<typeof bulbMachine.when>[0]>().toEqualTypeOf<
+			State | State[]
+		>();
 
 		bulbMachine.when('on', (b) => {
 			expectTypeOf<Parameters<typeof b.on>[0]>().toEqualTypeOf<Event>();

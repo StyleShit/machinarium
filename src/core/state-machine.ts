@@ -14,18 +14,24 @@ export class StateMachine<TState extends string, TEvent extends string> {
 	}
 
 	when(
-		state: TState,
+		states: TState | TState[],
 		builderCallback: (builder: TransitionsBuilder<TState, TEvent>) => void,
 	) {
 		const transitionBuilder = new TransitionsBuilder<TState, TEvent>();
 
 		builderCallback(transitionBuilder);
 
-		if (!this.transitions[state]) {
-			this.transitions[state] = [];
+		if (!Array.isArray(states)) {
+			states = [states];
 		}
 
-		this.transitions[state].push(transitionBuilder);
+		states.forEach((state) => {
+			if (!this.transitions[state]) {
+				this.transitions[state] = [];
+			}
+
+			this.transitions[state].push(transitionBuilder);
+		});
 
 		return this;
 	}
