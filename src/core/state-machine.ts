@@ -48,8 +48,10 @@ export class StateMachine<TState extends string, TEvent extends string> {
 		const currentTransition = this.transitions[this.state];
 
 		const destination = currentTransition
-			?.map((t) => t[getDestinationByEvent](event)?.[getDestination]())
-			.find((t) => !!t);
+			?.map((transition) =>
+				transition[getDestinationByEvent](event)?.[getDestination](),
+			)
+			.find((destination) => !!destination);
 
 		if (!destination) {
 			return;
