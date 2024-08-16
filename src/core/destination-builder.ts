@@ -1,10 +1,15 @@
 export const getDestination = Symbol('getDestination');
 
 export class DestinationBuilder<TState extends string> {
-	private destination: TState | undefined;
+	private destination: DestinationFn<TState> | undefined;
 
-	transitionTo(state: TState) {
-		this.destination = state;
+	transitionTo(destination: TState | DestinationFn<TState>) {
+		const destinationFn =
+			typeof destination === 'function'
+				? destination
+				: ((() => destination) as DestinationFn<TState>);
+
+		this.destination = destinationFn;
 	}
 
 	// Use a symbol to make it invisible for users, but visible for internal use.
@@ -12,3 +17,5 @@ export class DestinationBuilder<TState extends string> {
 		return this.destination ?? null;
 	}
 }
+
+type DestinationFn<TState extends string> = (prevState: TState) => TState;

@@ -152,6 +152,32 @@ describe('Machinarium', () => {
 		expect(bulbMachine.getState()).toBe('broken');
 	});
 
+	it('should support accepting function as destination', () => {
+		// Arrange.
+		type State = 'on' | 'off';
+		type Event = 'toggle';
+
+		const bulbMachine = createMachine<State, Event>({
+			initialState: 'off',
+		}).when(['on', 'off'], (b) => {
+			b.on('toggle').transitionTo((prev) =>
+				prev === 'on' ? 'off' : 'on',
+			);
+		});
+
+		// Act.
+		bulbMachine.send('toggle');
+
+		// Assert.
+		expect(bulbMachine.getState()).toBe('on');
+
+		// Act.
+		bulbMachine.send('toggle');
+
+		// Assert.
+		expect(bulbMachine.getState()).toBe('off');
+	});
+
 	it('should subscribe to state transitions', () => {
 		// Arrange.
 		type State = 'on' | 'off';
@@ -212,7 +238,7 @@ describe('Machinarium', () => {
 
 			expectTypeOf<
 				Parameters<typeof destinationBuilder.transitionTo>[0]
-			>().toEqualTypeOf<State>();
+			>().toEqualTypeOf<State | ((prev: State) => State)>();
 		});
 
 		expectTypeOf(bulbMachine.getState).toEqualTypeOf<() => State>();

@@ -45,19 +45,19 @@ export class StateMachine<TState extends string, TEvent extends string> {
 	}
 
 	send(event: TEvent) {
-		const currentTransition = this.transitions[this.state];
+		const possibleTransitions = this.transitions[this.state];
 
-		const destination = currentTransition
+		const nextDestination = possibleTransitions
 			?.map((transition) =>
 				transition[getDestinationByEvent](event)?.[getDestination](),
 			)
 			.find((destination) => !!destination);
 
-		if (!destination) {
+		if (!nextDestination) {
 			return;
 		}
 
-		this.state = destination;
+		this.state = nextDestination(this.state);
 
 		this.notify();
 	}
