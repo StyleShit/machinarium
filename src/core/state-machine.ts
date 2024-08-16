@@ -1,4 +1,8 @@
-import { TransitionsBuilder } from './transitions-builder';
+import { getDestination } from './destination-builder';
+import {
+	getDestinationByEvent,
+	TransitionsBuilder,
+} from './transitions-builder';
 
 export class StateMachine<TState extends string, TEvent extends string> {
 	private state: TState;
@@ -44,7 +48,7 @@ export class StateMachine<TState extends string, TEvent extends string> {
 		const currentTransition = this.transitions[this.state];
 
 		const destination = currentTransition
-			?.map((t) => t.get(event)?.getDestination())
+			?.map((t) => t[getDestinationByEvent](event)?.[getDestination]())
 			.find((t) => !!t);
 
 		if (!destination) {

@@ -1,3 +1,5 @@
+export const getDestination = Symbol('getDestination');
+
 export class DestinationBuilder<TState extends string> {
 	private destination: TState | undefined;
 
@@ -5,7 +7,8 @@ export class DestinationBuilder<TState extends string> {
 		this.destination = state;
 	}
 
-	getDestination() {
+	// Use a symbol to make it invisible for users, but visible for internal use.
+	[getDestination]() {
 		return this.destination ?? null;
 	}
 }
