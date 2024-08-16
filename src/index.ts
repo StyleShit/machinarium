@@ -1,3 +1,2 @@
-export default function helloWorld() {
-	return 'Hello World!';
-}
+export { createMachine } from './core/create-machine';
+export { StateMachine } from './core/state-machine';
