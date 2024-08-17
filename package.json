@@ -1,7 +1,7 @@
 {
 	"name": "machinarium",
 	"description": "Fluent, framework-agnostic, and type-safe state machine library, that aims for simplicity and great developer experience",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": "StyleShit",
 	"license": "MIT",
 	"repository": {
