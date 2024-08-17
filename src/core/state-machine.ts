@@ -62,18 +62,6 @@ export class StateMachine<TState extends string, TEvent extends string> {
 		return !!nextDestination;
 	}
 
-	getNextDestination(event: TEvent) {
-		const possibleTransitions = this.transitions[this.state];
-
-		const nextDestination = possibleTransitions
-			?.map((transition) =>
-				transition[getDestinationByEvent](event)?.[getDestination](),
-			)
-			.find((destination) => !!destination);
-
-		return nextDestination ?? null;
-	}
-
 	subscribe(subscriber: () => void) {
 		this.subscribers.add(subscriber);
 
@@ -86,5 +74,17 @@ export class StateMachine<TState extends string, TEvent extends string> {
 		this.subscribers.forEach((subscriber) => {
 			subscriber();
 		});
+	}
+
+	private getNextDestination(event: TEvent) {
+		const possibleTransitions = this.transitions[this.state];
+
+		const nextDestination = possibleTransitions
+			?.map((transition) =>
+				transition[getDestinationByEvent](event)?.[getDestination](),
+			)
+			.find((destination) => !!destination);
+
+		return nextDestination ?? null;
 	}
 }
