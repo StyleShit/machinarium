@@ -1,5 +1,11 @@
 # machinarium
 
+## 0.0.4
+
+### Patch Changes
+
+- 2264247: [React] Fix wrong code example in usage docs
+
 ## 0.0.3
 
 ### Patch Changes
