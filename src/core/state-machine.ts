@@ -21,9 +21,9 @@ export class StateMachine<TState extends string, TEvent extends string> {
 		states: TState | TState[],
 		builderCallback: (builder: TransitionsBuilder<TState, TEvent>) => void,
 	) {
-		const transitionBuilder = new TransitionsBuilder<TState, TEvent>();
+		const transitionsBuilder = new TransitionsBuilder<TState, TEvent>();
 
-		builderCallback(transitionBuilder);
+		builderCallback(transitionsBuilder);
 
 		if (!Array.isArray(states)) {
 			states = [states];
@@ -34,7 +34,7 @@ export class StateMachine<TState extends string, TEvent extends string> {
 				this.transitions[state] = [];
 			}
 
-			this.transitions[state].push(transitionBuilder);
+			this.transitions[state].push(transitionsBuilder);
 		});
 
 		return this;
