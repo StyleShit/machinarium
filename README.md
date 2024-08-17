@@ -92,7 +92,7 @@ and pass the event you want to check:
 type State = 'on' | 'off';
 type Event = 'turn-on' | 'turn-off';
 
-const bulbMachine = createMachine<State, Event>({
+const bulbStateMachine = createMachine<State, Event>({
   initialState: 'off',
 })
   .when('off', (b) => {
@@ -102,8 +102,8 @@ const bulbMachine = createMachine<State, Event>({
     b.on('turn-off').transitionTo('off');
   });
 
-console.log(bulbMachine.can('turn-on')); // true
-console.log(bulbMachine.can('turn-off')); // false
+console.log(bulbStateMachine.can('turn-on')); // true
+console.log(bulbStateMachine.can('turn-off')); // false
 ```
 
 ### Listening for Changes
@@ -118,4 +118,69 @@ const unsubscribe = bulbStateMachine.subscribe(() => {
 bulbStateMachine.send('turn-on'); // Logs 'New state: on'
 
 unsubscribe();
+```
+
+## Usage with React
+
+To use Machinarium with React, use the `useMachine` hook from `machinarium/react`. This hook will provide you with the
+current state and a `send` function to transition between states:
+
+```tsx
+import { createMachine } from 'machinarium';
+import { useMachine } from 'machinarium/react';
+
+type State = 'on' | 'off';
+type Event = 'turn-on' | 'turn-off';
+
+const bulbStateMachine = createMachine<State, Event>({
+  initialState: 'off',
+})
+  .when('off', (b) => {
+    b.on('turn-on').transitionTo('on');
+  })
+  .when('on', (b) => {
+    b.on('turn-off').transitionTo('off');
+  });
+
+function Bulb() {
+  const { state, send } = useMachine(bulbStateMachine);
+
+  return (
+    <div>
+      <p>The bulb is {state}</p>
+      <button onClick={() => send('turn-on')}>Turn on</button>
+      <button onClick={() => send('turn-off')}>Turn off</button>
+    </div>
+  );
+}
+```
+
+Each time the machine's state will change (either by using the `send` function from the hook, or by using the `send` method
+from the machine itself), the component will re-render with the new state.
+
+You can also determine reactively whether a transition can be performed using the `canTransition` function from the hook:
+
+```tsx
+function Bulb() {
+  const { state, send, canTransition } = useMachine(bulbStateMachine);
+
+  return (
+    <div>
+      <p>The bulb is {state}</p>
+      <button
+        disabled={canTransition('turn-on')}
+        onClick={() => send('turn-on')}
+      >
+        Turn on
+      </button>
+
+      <button
+        disabled={canTransition('turn-off')}
+        onClick={() => send('turn-off')}
+      >
+        Turn off
+      </button>
+    </div>
+  );
+}
 ```
