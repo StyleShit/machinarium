@@ -1,5 +1,12 @@
 # machinarium
 
+## 0.0.3
+
+### Patch Changes
+
+- 8e31f8b: [React] Add usage documentation
+- 90155bd: [React] Support using the state machine with react
+
 ## 0.0.2
 
 ### Patch Changes
