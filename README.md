@@ -168,14 +168,14 @@ function Bulb() {
     <div>
       <p>The bulb is {state}</p>
       <button
-        disabled={canTransition('turn-on')}
+        disabled={!canTransition('turn-on')}
         onClick={() => send('turn-on')}
       >
         Turn on
       </button>
 
       <button
-        disabled={canTransition('turn-off')}
+        disabled={!canTransition('turn-off')}
         onClick={() => send('turn-off')}
       >
         Turn off
