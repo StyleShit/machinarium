@@ -1,5 +1,5 @@
 import { act } from 'react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useMachine } from '../use-machine';
 import { createMachine } from '../../core/create-machine';
@@ -68,6 +68,21 @@ describe('useMachine', () => {
 
 		expect(canTurnOn).toBe(false);
 		expect(canTurnOff).toBe(true);
+	});
+
+	it('should have proper types', () => {
+		// Arrange.
+		const bulbMachine = createBulbMachine();
+
+		// Act.
+		const { result } = renderHook(() => useMachine(bulbMachine));
+
+		// Assert.
+		expectTypeOf(result.current).toMatchTypeOf<{
+			state: 'on' | 'off';
+			send: (event: 'turn-on' | 'turn-off') => void;
+			canTransition: (event: 'turn-on' | 'turn-off') => boolean;
+		}>();
 	});
 });
 
